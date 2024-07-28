@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
 import { envOrDefault, formatTimestamp } from '../utils/util';
+import { TextField, Button, Typography, Container, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
-// Component to fill a prescription
-const FillPrescription = () => {
+const FillPrescription = ({ setMessage }) => {
     const [prescriptions, setPrescriptions] = useState([]);
     const [selectedPrescription, setSelectedPrescription] = useState('');
     const [pharmacistId, setPharmacistId] = useState('');
     const [error, setError] = useState(null);
-    
+
     const fetchPrescriptions = async () => {
         try {
             const apiUrl = envOrDefault('REACT_APP_API_BASE_URL', 'http://localhost:3000');
@@ -28,6 +27,7 @@ const FillPrescription = () => {
         } catch (error) {
             console.error('Error fetching prescriptions:', error);
             setError('Error fetching prescriptions');
+            setMessage({ type: 'error', text: `Error fetching prescriptions: ${error.response?.data || error.message}` });
         }
     };
 
@@ -46,37 +46,45 @@ const FillPrescription = () => {
                 filledDate,
                 pharmacistId
             });
-            alert('Prescription filled successfully');
+            setMessage({ type: 'success', text: 'Prescription filled successfully' });
             fetchPrescriptions(); // Refresh the list of prescriptions
         } catch (error) {
             console.error('Error filling prescription:', error);
-            alert('Error filling prescription');
+            setMessage({ type: 'error', text: `Error filling prescription: ${error.response?.data || error.message}` });
         }
     };
 
     return (
-        <div>
-            <h1>Fill Prescription</h1>
-            {error && <p>{error}</p>}
+        <Container>
+            <Typography variant="h4" gutterBottom>Fill Prescription</Typography>
+            {error && <Typography color="error">{error}</Typography>}
             <form onSubmit={handleFill}>
-                <div>
-                    <label>Prescription:</label>
-                    <select value={selectedPrescription} onChange={e => setSelectedPrescription(e.target.value)} required>
-                        <option value="">Select Prescription</option>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Prescription</InputLabel>
+                    <Select
+                        value={selectedPrescription}
+                        onChange={e => setSelectedPrescription(e.target.value)}
+                        required
+                    >
+                        <MenuItem value=""><em>Select Prescription</em></MenuItem>
                         {prescriptions.map(prescription => (
-                            <option key={prescription.prescriptionId} value={prescription.prescriptionId}>
+                            <MenuItem key={prescription.prescriptionId} value={prescription.prescriptionId}>
                                 {prescription.prescriptionId} - {prescription.patientId}
-                            </option>
+                            </MenuItem>
                         ))}
-                    </select>
-                </div>
-                <div>
-                    <label>Pharmacist ID:</label>
-                    <input type="text" value={pharmacistId} onChange={e => setPharmacistId(e.target.value)} required />
-                </div>
-                <button type="submit">Fill Prescription</button>
+                    </Select>
+                </FormControl>
+                <TextField
+                    label="Pharmacist ID"
+                    value={pharmacistId}
+                    onChange={e => setPharmacistId(e.target.value)}
+                    required
+                    fullWidth
+                    margin="normal"
+                />
+                <Button type="submit" variant="contained" color="primary" fullWidth>Fill Prescription</Button>
             </form>
-        </div>
+        </Container>
     );
 };
 

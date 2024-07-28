@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { envOrDefault, formatTimestamp } from '../utils/util';
+import { TextField, Button, Typography, Container, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
-// Component to terminate a prescription
-const TerminatePrescription = () => {
+const TerminatePrescription = ({ setMessage }) => {
     const [prescriptions, setPrescriptions] = useState([]);
     const [selectedPrescription, setSelectedPrescription] = useState('');
     const [doctorId, setDoctorId] = useState('');
@@ -27,6 +27,7 @@ const TerminatePrescription = () => {
         } catch (error) {
             console.error('Error fetching prescriptions:', error);
             setError('Error fetching prescriptions');
+            setMessage({ type: 'error', text: `Error fetching prescriptions: ${error.response?.data || error.message}` });
         }
     };
 
@@ -45,37 +46,45 @@ const TerminatePrescription = () => {
                 terminationDate,
                 doctorId
             });
-            alert('Prescription terminated successfully');
+            setMessage({ type: 'success', text: 'Prescription terminated successfully' });
             fetchPrescriptions(); // Refresh the list of prescriptions
         } catch (error) {
             console.error('Error terminating prescription:', error);
-            alert('Error terminating prescription');
+            setMessage({ type: 'error', text: `Error terminating prescription: ${error.response?.data || error.message}` });
         }
     };
 
     return (
-        <div>
-            <h1>Terminate Prescription</h1>
-            {error && <p>{error}</p>}
+        <Container>
+            <Typography variant="h4" gutterBottom>Terminate Prescription</Typography>
+            {error && <Typography color="error">{error}</Typography>}
             <form onSubmit={handleTerminate}>
-                <div>
-                    <label>Prescription:</label>
-                    <select value={selectedPrescription} onChange={e => setSelectedPrescription(e.target.value)} required>
-                        <option value="">Select Prescription</option>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Prescription</InputLabel>
+                    <Select
+                        value={selectedPrescription}
+                        onChange={e => setSelectedPrescription(e.target.value)}
+                        required
+                    >
+                        <MenuItem value=""><em>Select Prescription</em></MenuItem>
                         {prescriptions.map(prescription => (
-                            <option key={prescription.prescriptionId} value={prescription.prescriptionId}>
+                            <MenuItem key={prescription.prescriptionId} value={prescription.prescriptionId}>
                                 {prescription.prescriptionId} - {prescription.patientId}
-                            </option>
+                            </MenuItem>
                         ))}
-                    </select>
-                </div>
-                <div>
-                    <label>Doctor ID:</label>
-                    <input type="text" value={doctorId} onChange={e => setDoctorId(e.target.value)} required />
-                </div>
-                <button type="submit">Terminate Prescription</button>
+                    </Select>
+                </FormControl>
+                <TextField
+                    label="Doctor ID"
+                    value={doctorId}
+                    onChange={e => setDoctorId(e.target.value)}
+                    required
+                    fullWidth
+                    margin="normal"
+                />
+                <Button type="submit" variant="contained" color="primary" fullWidth>Terminate Prescription</Button>
             </form>
-        </div>
+        </Container>
     );
 };
 
