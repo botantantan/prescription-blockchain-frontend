@@ -17,9 +17,26 @@ const Dashboard = () => {
                 const response = await axios.get(`${apiUrl}/api/getAllAssets`);
                 const assets = response.data;
 
-                // Filter prescriptions and activities
-                setPrescriptions(assets.filter(asset => asset.prescriptionId && asset.creationDate));
-                setActivities(assets.filter(asset => asset.activityId && asset.timestamp));
+
+                // Filter and sort prescriptions
+                const sortedPrescriptions = assets
+                    .filter(asset => asset.prescriptionId && asset.creationDate)
+                    .sort((a, b) => {
+                        const aId = parseInt(a.prescriptionId.split('-')[1], 10);
+                        const bId = parseInt(b.prescriptionId.split('-')[1], 10);
+                        return aId - bId;
+                    });
+                setPrescriptions(sortedPrescriptions);
+
+                // Filter and sort activities
+                const sortedActivities = assets
+                    .filter(asset => asset.activityId && asset.timestamp)
+                    .sort((a, b) => {
+                        const aId = parseInt(a.activityId.split('-')[1], 10);
+                        const bId = parseInt(b.activityId.split('-')[1], 10);
+                        return aId - bId;
+                    });
+                setActivities(sortedActivities);
             } catch (error) {
                 console.error('Error fetching assets:', error);
                 setError('Error fetching assets');
