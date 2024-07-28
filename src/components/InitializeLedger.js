@@ -1,11 +1,14 @@
 import React from 'react';
 import axios from 'axios';
 
+import { envOrDefault } from '../utils/util'
+
 // Component to initialize the ledger
 const InitializeLedger = () => {
     const handleInitialize = async () => {
         try {
-            await axios.post('/api/initLedger');
+            const apiUrl = envOrDefault('REACT_APP_API_BASE_URL', 'http://localhost:3000')
+            await axios.post(`${apiUrl}/api/initLedger`);
             alert('Ledger initialized successfully');
         } catch (error) {
             console.error('Error initializing ledger:', error);

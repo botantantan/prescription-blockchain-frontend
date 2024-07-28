@@ -1,7 +1,7 @@
 {
-  "name": "fabric-frontend",
+  "name": "prescription-blockchain-frontend",
   "version": "1.0.0",
-  "description": "Hyperledger Fabric frontend application using React",
+  "description": "hyperledger fabric frontend using react",
   "main": "index.js",
   "scripts": {
     "start": "export NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
@@ -16,7 +16,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3"
   },
-  "author": "Your Name",
+  "author": "fritz",
   "license": "Apache-2.0",
   "browserslist": {
     "production": [

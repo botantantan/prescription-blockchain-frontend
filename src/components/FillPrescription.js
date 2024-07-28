@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// Utility function to format current timestamp
-const formatTimestamp = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day},${hours}:${minutes}`;
-};
+import { envOrDefault, formatTimestamp } from '../utils/util';
 
 // Component to fill a prescription
 const FillPrescription = () => {
@@ -21,7 +12,8 @@ const FillPrescription = () => {
     useEffect(() => {
         const fetchPrescriptions = async () => {
             try {
-                const response = await axios.get('/api/getAllAssets');
+                const apiUrl = envOrDefault('REACT_APP_API_BASE_URL', 'http://localhost:3000')
+                const response = await axios.get(`${apiUrl}/api/getAllAssets`);
                 setPrescriptions(response.data.filter(asset => asset.type === 'prescription'));
             } catch (error) {
                 console.error('Error fetching prescriptions:', error);
@@ -33,12 +25,13 @@ const FillPrescription = () => {
 
     const handleFill = async (e) => {
         e.preventDefault();
-        const filledAt = formatTimestamp();
+        const filledDate = formatTimestamp();
 
         try {
-            await axios.post('/api/fillRx', {
+            const apiUrl = envOrDefault('REACT_APP_API_BASE_URL', 'http://localhost:3000')
+            await axios.post(`${apiUrl}/api/fillRx`, {
                 prescriptionId: selectedPrescription,
-                filledAt,
+                filledDate,
                 pharmacistId
             });
             alert('Prescription filled successfully');
