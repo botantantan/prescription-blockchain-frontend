@@ -3,7 +3,6 @@ import axios from 'axios';
 import { envOrDefault, formatTimestamp } from '../utils/util';
 import { TextField, Button, Checkbox, FormControlLabel, Typography, Container, Grid } from '@mui/material';
 
-// Component to create a new prescription
 const CreatePrescription = ({ setMessage }) => {
     const [patientId, setPatientId] = useState('');
     const [doctorId, setDoctorId] = useState('');

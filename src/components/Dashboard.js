@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { envOrDefault } from '../utils/util';
-import { Typography, Container, Grid, Card, CardContent, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Typography, Container, Grid, Card, CardContent, Button, ToggleButtonGroup, ToggleButton, Modal, Box } from '@mui/material';
 
-// Dashboard component to display prescriptions and activities
 const Dashboard = ({ setMessage }) => {
     const [prescriptions, setPrescriptions] = useState([]);
     const [activities, setActivities] = useState([]);
-    const [error, setError] = useState(null);
     const [view, setView] = useState('prescriptions'); // State to toggle between views
+    const [selectedPrescription, setSelectedPrescription] = useState(null);
+    const [activityChain, setActivityChain] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
 
-    // Fetch all assets when component mounts
     useEffect(() => {
         const fetchAssets = async () => {
             try {
@@ -39,7 +39,6 @@ const Dashboard = ({ setMessage }) => {
                 setActivities(sortedActivities);
             } catch (error) {
                 console.error('Error fetching assets:', error);
-                setError('Error fetching assets');
                 setMessage({ type: 'error', text: `Error fetching assets: ${error.response?.data || error.message}` });
             }
         };
@@ -53,10 +52,28 @@ const Dashboard = ({ setMessage }) => {
         }
     };
 
+    const handleOpenModal = async (prescriptionId) => {
+        try {
+            const apiUrl = envOrDefault('REACT_APP_API_BASE_URL', 'http://localhost:3000');
+            const response = await axios.get(`${apiUrl}/api/getRxHistory/${prescriptionId}`);
+            setActivityChain(response.data);
+            setSelectedPrescription(prescriptionId);
+            setModalOpen(true);
+        } catch (error) {
+            console.error('Error fetching activity chain:', error);
+            setMessage({ type: 'error', text: `Error fetching activity chain: ${error.response?.data || error.message}` });
+        }
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setActivityChain([]);
+        setSelectedPrescription(null);
+    };
+
     return (
         <Container>
             <Typography variant="h4" gutterBottom>Dashboard</Typography>
-            {error && <Typography color="error">{error}</Typography>}
 
             <ToggleButtonGroup
                 value={view}
@@ -91,6 +108,9 @@ const Dashboard = ({ setMessage }) => {
                                         <Typography>Valid: {prescription.isValid}</Typography>
                                         <Typography>Filled By: {prescription.pharmacistId || 'N/A'}</Typography>
                                         <Typography>Terminated At: {prescription.terminationDate || 'N/A'}</Typography>
+                                        <Button variant="contained" color="primary" onClick={() => handleOpenModal(prescription.prescriptionId)}>
+                                            View Activity Chain
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             </Grid>
@@ -120,6 +140,22 @@ const Dashboard = ({ setMessage }) => {
                     </Grid>
                 </>
             )}
+
+            <Modal open={modalOpen} onClose={handleCloseModal}>
+                <Box style={{ padding: '20px', backgroundColor: 'white', margin: '20px auto', maxWidth: '600px' }}>
+                    <Typography variant="h6" gutterBottom>Activity Chain for {selectedPrescription}</Typography>
+                    {activityChain.map(activity => (
+                        <Box key={activity.activityId} mb={2} p={2} border={1} borderColor="grey.300" borderRadius={4}>
+                            <Typography>Activity ID: {activity.activityId}</Typography>
+                            <Typography>Timestamp: {activity.timestamp}</Typography>
+                            <Typography>Prescription ID: {activity.prescriptionId}</Typography>
+                            <Typography>Actor: {activity.actorId}</Typography>
+                            <Typography>Type: {activity.type}</Typography>
+                            <Typography>Parent ID: {activity.parentId || 'N/A'}</Typography>
+                        </Box>
+                    ))}
+                </Box>
+            </Modal>
         </Container>
     );
 };
