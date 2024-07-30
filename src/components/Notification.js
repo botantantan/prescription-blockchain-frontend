@@ -1,22 +1,17 @@
 import React from 'react';
 import { Alert, Snackbar } from '@mui/material';
 
-// Notification component to display success or error messages
 const Notification = ({ message, handleClose }) => {
     if (!message) return null;
 
     return (
-        <Snackbar 
-            open={true} 
+        <Snackbar
+            open={true}
             autoHideDuration={3000} 
-            onClose={handleClose} 
+            onClose={handleClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-            <Alert 
-                onClose={handleClose} 
-                severity={message.type} 
-                sx={{ width: '100%' }}
-            >
+            <Alert onClose={handleClose} severity={message.type} sx={{ width: '100%' }}>
                 {message.text}
             </Alert>
         </Snackbar>

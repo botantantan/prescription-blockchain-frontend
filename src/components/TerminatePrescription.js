@@ -47,7 +47,7 @@ const TerminatePrescription = ({ setMessage }) => {
                 doctorId
             });
             setMessage({ type: 'success', text: 'Prescription terminated successfully' });
-            fetchPrescriptions(); // Refresh the list of prescriptions
+            fetchPrescriptions();
         } catch (error) {
             console.error('Error terminating prescription:', error);
             setMessage({ type: 'error', text: `Error terminating prescription: ${error.response?.data || error.message}` });

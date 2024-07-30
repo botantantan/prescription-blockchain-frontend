@@ -3,6 +3,7 @@ import axios from 'axios';
 import { envOrDefault, formatTimestamp } from '../utils/util';
 import { TextField, Button, Checkbox, FormControlLabel, Typography, Container, Grid } from '@mui/material';
 
+// Component to create a new prescription
 const CreatePrescription = ({ setMessage }) => {
     const [patientId, setPatientId] = useState('');
     const [doctorId, setDoctorId] = useState('');
@@ -18,7 +19,6 @@ const CreatePrescription = ({ setMessage }) => {
                 const response = await axios.get(`${apiUrl}/api/getAllAssets`);
                 const assets = response.data;
 
-                // Determine the highest prescription ID
                 const highestId = assets
                     .filter(asset => asset.prescriptionId)
                     .reduce((maxId, asset) => {
@@ -53,7 +53,7 @@ const CreatePrescription = ({ setMessage }) => {
                 iterCount: isIter ? iterCount : '0'
             });
             setMessage({ type: 'success', text: 'Prescription created successfully' });
-            setPrescriptionIdCounter(prevCounter => prevCounter + 1); // Increment the counter for next prescription
+            setPrescriptionIdCounter(prevCounter => prevCounter + 1);
         } catch (error) {
             console.error('Error creating prescription:', error);
             setMessage({ type: 'error', text: `Error creating prescription: ${error.response?.data || error.message}` });

@@ -47,7 +47,7 @@ const FillPrescription = ({ setMessage }) => {
                 pharmacistId
             });
             setMessage({ type: 'success', text: 'Prescription filled successfully' });
-            fetchPrescriptions(); // Refresh the list of prescriptions
+            fetchPrescriptions();
         } catch (error) {
             console.error('Error filling prescription:', error);
             setMessage({ type: 'error', text: `Error filling prescription: ${error.response?.data || error.message}` });

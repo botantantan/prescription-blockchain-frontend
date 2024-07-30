@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
     const menuItems = [
-        { text: 'Dashboard',  path: '/' },
+        { text: 'Dashboard', path: '/' },
         { text: 'Initialize Ledger', path: '/initialize-ledger' },
         { text: 'Create Prescription', path: '/create-prescription' },
         { text: 'Terminate Prescription', path: '/terminate-prescription' },
