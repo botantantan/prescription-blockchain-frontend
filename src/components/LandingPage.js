@@ -11,7 +11,7 @@ const LandingPage = () => {
 
   return (
     <Container>
-      <Typography variant="h3" gutterBottom>Welcome</Typography>
+      <Typography variant="h3" gutterBottom>Prescription Management System</Typography>
       <Button variant="contained" color="primary" onClick={handleLogin}>
         Login
       </Button>
